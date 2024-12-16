@@ -10,15 +10,26 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Install ARM64 toolchain
-        run: sudo apt-get install -y gcc-aarch64-linux-gnu
+      # Step 1: 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Build for ARM64
+      # Step 2: 安装依赖
+      - name: Install dependencies
         run: |
-            mkdir build
-            cd build
-            CC=aarch64-linux-gnu-gcc cmake ..
-            make
+          sudo apt-get update
+          sudo apt-get install -y qt5-default qttools5-dev-tools build-essential
+
+      # Step 3: 创建构建目录
+      - name: Create build directory
+        run: mkdir build
+
+      # Step 4: 使用 qmake 构建
+      - name: Build with qmake
+        run: |
+          cd build
+          qmake ../<项目主 `.pro` 文件路径>
+          make -j$(nproc)
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
